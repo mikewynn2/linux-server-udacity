@@ -109,3 +109,11 @@ application.secret_key = '<some secret key here>'
   - `sudo service apache2 restart`
   
 15. Visit site at [http://54.186.238.30](http://54.186.238.30)
+
+
+## References:
+https://www.digitalocean.com/community/tutorials/how-to-deploy-a-flask-application-on-an-ubuntu-vps
+
+https://www.digitalocean.com/community/tutorials/how-to-tune-your-ssh-daemon-configuration-on-a-linux-vps
+
+https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-with-ufw-on-ubuntu-16-04
