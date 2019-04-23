@@ -58,19 +58,19 @@ Take a baseline installation of a Linux distribution on a virtual machine and pr
   - Install git using: `sudo apt-get install git`
   - `sudo mkdir circus`
   - Change owner of the newly created catalog folder `sudo chown -R www-data:www-data circus`
-  - `cd /catalog`
+  - `cd /circus`
   - Clone your project from github `git clone https://github.com/mikewynn2/circus-item-catalog.git circus`
   - Create a flaskapp.wsgi file, then add this inside:
-  `#!/usr/bin/python
+  ```#!/usr/bin/python
 import sys
 import logging
 logging.basicConfig(stream=sys.stderr)
 sys.path.insert(0,"/var/www/circus/circus")
 
 from application import app as application
-application.secret_key = '<some secret key here>'`
+application.secret_key = '<some secret key here>'```
   
-  - Rename application.py to __init__.py `mv application.py __init__.py`
+  
 
 11. Install Flask and other dependencies
   - Install pip with `sudo apt-get install python-pip`
@@ -78,7 +78,7 @@ application.secret_key = '<some secret key here>'`
   - Install other project dependencies `sudo pip install httplib2 oauth2client sqlalchemy`
 
 12. Update path of client_secrets.json file
-  - `vim __init__.py`
+  - `vim application.py`
   - Change client_secrets.json path to `/var/www/circus/circus/client_secrets.json`
   
 13. Configure and enable a new virtual host
