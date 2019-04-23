@@ -36,8 +36,8 @@ Take a baseline installation of a Linux distribution on a virtual machine and pr
 5. Configure the local timezone to UTC
   - Run `sudo dpkg-reconfigure tzdata` and then choose UTC
  
-6. As ubuntu user add the key
-  - Run `sudo su - grader vim .ssh/authorized_keys`
+6. As ubuntu user added the key:
+  - `sudo su - grader vim .ssh/authorized_keys`
 
 7. Disable ssh login for root user
   - Run `sudo nano /etc/ssh/sshd_config`
