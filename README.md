@@ -19,8 +19,8 @@ Take a baseline installation of a Linux distribution on a virtual machine and pr
   - Prevent the error `sudo: unable to resolve host` by adding this line `127.0.1.1 ip-10-20-52-12`
    
 2. Update all currently installed packages
-  - Download package lists with `sudo apt-get update`
-  - Fetch new versions of packages with `sudo apt-get upgrade`
+  - Download package lists with `sudo apt update`
+  - Fetch new versions of packages with `sudo apt dist-upgrade`
 
 3. Change SSH port from 22 to 2200
   - Run `sudo nano /etc/ssh/sshd_config`
@@ -36,8 +36,8 @@ Take a baseline installation of a Linux distribution on a virtual machine and pr
 5. Configure the local timezone to UTC
   - Run `sudo dpkg-reconfigure tzdata` and then choose UTC
  
-6. Configure key-based authentication for grader user
-  - Run this command `cp /root/.ssh/authorized_keys /home/grader/.ssh/authorized_keys`
+6. As ubuntu user add the key
+  - Run `sudo su - grader vim .ssh/authorized_keys`
 
 7. Disable ssh login for root user
   - Run `sudo nano /etc/ssh/sshd_config`
@@ -56,89 +56,56 @@ Take a baseline installation of a Linux distribution on a virtual machine and pr
   
 10. Clone the Catalog app from Github
   - Install git using: `sudo apt-get install git`
-  - `cd /var/www`
-  - `sudo mkdir catalog`
-  - Change owner of the newly created catalog folder `sudo chown -R grader:grader catalog`
+  - `sudo mkdir circus`
+  - Change owner of the newly created catalog folder `sudo chown -R www-data:www-data circus`
   - `cd /catalog`
-  - Clone your project from github `git clone https://github.com/mikewynn2/circus-item-catalog.git`
-  - Create a catalog.wsgi file, then add this inside:
-  ```
-  import sys
-  import logging
-  logging.basicConfig(stream=sys.stderr)
-  sys.path.insert(0, "/var/www/catalog/")
-  
-  from catalog import app as application
-  application.secret_key = 'supersecretkey'
-  ```
-  - Rename application.py to __init__.py `mv application.py __init__.py`
-  
-11. Install virtual environment
-  - Install the virtual environment `sudo pip install virtualenv`
-  - Create a new virtual environment with `sudo virtualenv venv`
-  - Activate the virutal environment `source venv/bin/activate`
-  - Change permissions `sudo chmod -R 777 venv`
+  - Clone your project from github `git clone https://github.com/mikewynn2/circus-item-catalog.git circus`
+  - Create a flaskapp.wsgi file, then add this inside:
+  `#!/usr/bin/python
+import sys
+import logging
+logging.basicConfig(stream=sys.stderr)
+sys.path.insert(0,"/var/www/circus/circus")
 
-12. Install Flask and other dependencies
+from application import app as application
+application.secret_key = '<some secret key here>'`
+  
+  - Rename application.py to __init__.py `mv application.py __init__.py`
+
+11. Install Flask and other dependencies
   - Install pip with `sudo apt-get install python-pip`
   - Install Flask `pip install Flask`
-  - Install other project dependencies `sudo pip install httplib2 oauth2client sqlalchemy psycopg2 sqlalchemy_utils`
+  - Install other project dependencies `sudo pip install httplib2 oauth2client sqlalchemy`
 
-13. Update path of client_secrets.json file
+12. Update path of client_secrets.json file
   - `nano __init__.py`
   - Change client_secrets.json path to `/var/www/catalog/catalog/client_secrets.json`
   
-14. Configure and enable a new virtual host
-  - Run this: `sudo nano /etc/apache2/sites-available/catalog.conf`
-  - Paste this code: 
+13. Configure and enable a new virtual host
+  - Run this: `sudo nano /etc/apache2/sites-enabled/circus-site.conf`
+  - Paste this code:  
   ```
-  <VirtualHost *:80>
-      ServerName 54.186.238.30
-      ServerAdmin admin@54.186.238.30
-      WSGIDaemonProcess catalog python-path=/var/www/catalog:/var/www/catalog/venv/lib/python2.7/site-packages
-      WSGIProcessGroup catalog
-      WSGIScriptAlias / /var/www/catalog/catalog.wsgi
-      <Directory /var/www/catalog/catalog/>
-          Order allow,deny
-          Allow from all
-      </Directory>
-      Alias /static /var/www/catalog/catalog/static
-      <Directory /var/www/catalog/catalog/static/>
-          Order allow,deny
-          Allow from all
-      </Directory>
-      ErrorLog ${APACHE_LOG_DIR}/error.log
-      LogLevel warn
-      CustomLog ${APACHE_LOG_DIR}/access.log combined
-  </VirtualHost>
+ <VirtualHost *:80>
+                ServerName mywebsite.com
+                ServerAdmin admin@mywebsite.com
+                WSGIScriptAlias / /var/www/circus/flaskapp.wsgi
+                <Directory /var/www/circus/circus/>
+                        Order allow,deny
+                        Allow from all
+                </Directory>
+                Alias /static /var/www/circus/circus/static
+                <Directory /var/www/circus/circus/static/>
+                        Order allow,deny
+                        Allow from all
+                </Directory>
+                ErrorLog ${APACHE_LOG_DIR}/error.log
+                LogLevel warn
+                CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
   ```
   - Enable the virtual host `sudo a2ensite catalog`
 
-15. Install and configure PostgreSQL
-  - `sudo apt-get install libpq-dev python-dev`
-  - `sudo apt-get install postgresql postgresql-contrib`
-  - `sudo su - postgres`
-  - `psql`
-  - `CREATE USER catalog WITH PASSWORD 'password';`
-  - `ALTER USER catalog CREATEDB;`
-  - `CREATE DATABASE catalog WITH OWNER catalog;`
-  - `\c catalog`
-  - `REVOKE ALL ON SCHEMA public FROM public;`
-  - `GRANT ALL ON SCHEMA public TO catalog;`
-  - `\q`
-  - `exit`
-  - Change create engine line in your `__init__.py` and `database_setup.py` to: 
-  `engine = create_engine('postgresql://catalog:password@localhost/catalog')`
-  - `python /var/www/catalog/catalog/database_setup.py`
-  - Make sure no remote connections to the database are allowed. Check if the contents of this file `sudo nano /etc/postgresql/9.3/main/pg_hba.conf` looks like this:
-  ```
-  local   all             postgres                                peer
-  local   all             all                                     peer
-  host    all             all             127.0.0.1/32            md5
-  host    all             all             ::1/128                 md5
-  ```
-  
-16. Restart Apache 
+14. Restart Apache 
   - `sudo service apache2 restart`
   
-17. Visit site at [http://54.186.238.30](http://54.186.238.30)
+15. Visit site at [http://54.186.238.30](http://54.186.238.30)
