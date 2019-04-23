@@ -78,11 +78,11 @@ application.secret_key = '<some secret key here>'`
   - Install other project dependencies `sudo pip install httplib2 oauth2client sqlalchemy`
 
 12. Update path of client_secrets.json file
-  - `nano __init__.py`
-  - Change client_secrets.json path to `/var/www/catalog/catalog/client_secrets.json`
+  - `vim __init__.py`
+  - Change client_secrets.json path to `/var/www/circus/circus/client_secrets.json`
   
 13. Configure and enable a new virtual host
-  - Run this: `sudo nano /etc/apache2/sites-enabled/circus-site.conf`
+  - Run this: `sudo vim /etc/apache2/sites-enabled/circus-site.conf`
   - Paste this code:  
   ```
  <VirtualHost *:80>
@@ -103,7 +103,7 @@ application.secret_key = '<some secret key here>'`
                 CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
   ```
-  - Enable the virtual host `sudo a2ensite catalog`
+  - Enable the virtual host `sudo a2ensite circus-site`
 
 14. Restart Apache 
   - `sudo service apache2 restart`
