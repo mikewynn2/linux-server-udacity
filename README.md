@@ -61,16 +61,16 @@ Take a baseline installation of a Linux distribution on a virtual machine and pr
   - `cd /circus`
   - Clone your project from github `git clone https://github.com/mikewynn2/circus-item-catalog.git circus`
   - Create a flaskapp.wsgi file, then add this inside:
-  ```#!/usr/bin/python
-import sys
-import logging
-logging.basicConfig(stream=sys.stderr)
-sys.path.insert(0,"/var/www/circus/circus")
+  ```
+  #!/usr/bin/python
+  import sys
+  import logging
+  logging.basicConfig(stream=sys.stderr)
+  sys.path.insert(0,"/var/www/circus/circus")
 
 from application import app as application
-application.secret_key = '<some secret key here>'```
-  
-  
+application.secret_key = '<some secret key here>'
+```
 
 11. Install Flask and other dependencies
   - Install pip with `sudo apt-get install python-pip`
